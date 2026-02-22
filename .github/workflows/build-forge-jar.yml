@@ -1,0 +1,31 @@
+name: Build NeoForge JAR
+
+on:
+  push:
+    branches:
+      - 'copilot/compile-source-code'
+  workflow_dispatch:
+
+jobs:
+  build-neoforge:
+    name: Build NeoForge 1.21.1 JAR
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Gradle & Caches
+        uses: "./.github/actions/setup-gradle"
+
+      - name: Build NeoForge JAR
+        run: ./gradlew :forge:remapJar
+
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: valkyrienskies-1-21-1-neoforge
+          path: forge/build/libs/*.jar
+          if-no-files-found: error
